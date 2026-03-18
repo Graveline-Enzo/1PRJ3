@@ -6,7 +6,7 @@
     min-height: 90vh;
 }
 
-
+/* ==== LOGO HEADER ==== */
 .logo-title{
     display: flex;
     justify-content: start;
@@ -21,12 +21,113 @@
     background-color: var(--orange);
 }
 
-
-.btn-outline-success {
+header .btn-outline-success {
   --bs-btn-color: #ffa500;
   --bs-btn-border-color: #ffa500;
   --bs-btn-hover-bg: #ffa500;
   --bs-btn-hover-border-color: #ffa500;
   --bs-btn-active-bg: #ffa500;
   --bs-btn-active-border-color: #ffa500;
+}
+
+/* Index.php */
+
+.salon-presentation {
+    background-image: url('../../ressource/salon-background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+}
+
+/* FOOTER */ 
+footer{
+    width: 100%;
+}
+
+
+
+
+.salon-presentation {
+    background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('../../ressource/salon-background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.salon-content {
+    padding: 0 60px;
+    max-width: 700px;
+    color: white;
+}
+
+.salon-tag {
+    color: var(--orange);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.salon-content h2 {
+    font-size: 5rem;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.salon-desc {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.salon-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.btn-rdv {
+    background-color: var(--orange);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.btn-services {
+    background-color: transparent;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    border: 2px solid white;
+}
+
+.salon-stats {
+    display: flex;
+    gap: 40px;
+    border-top: 1px solid rgba(255,255,255,0.3);
+    padding-top: 20px;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stat strong {
+    font-size: 1.5rem;
+    display: block;
+}
+
+.stat p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
 }
