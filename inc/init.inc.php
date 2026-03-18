@@ -26,7 +26,7 @@ session_start();
 
 // -------------------- CHEMIN
 // Création de la constante
-define("RACINE_SITE", "/1PRJ3/");
+define("RACINE_SITE", "1PRJ3/");
 
 // -------------------- VARIABLES
 // Initialisation de la variable contenue vide pour éviter les erreurs
