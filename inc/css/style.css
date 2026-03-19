@@ -32,6 +32,12 @@ header .btn-outline-success {
 
 /* Index.php */
 
+.salon-content h2 {
+    font-size: 5rem;
+    font-weight: 900;
+}
+
+/* 
 .salon-presentation {
     background-image: url('../../ressource/salon-background.jpg');
     background-size: cover;
@@ -39,12 +45,6 @@ header .btn-outline-success {
     background-repeat: no-repeat;
     height: 100vh;
 }
-
-/* FOOTER */ 
-footer{
-    width: 100%;
-}
-
 
 
 
@@ -130,4 +130,4 @@ footer{
     margin: 0;
     font-size: 0.85rem;
     color: rgba(255,255,255,0.7);
-}
+} */
