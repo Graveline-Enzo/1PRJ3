@@ -1,40 +1,27 @@
 <?php
+/* =============================================================
+   inc/init.inc.php — Initialisation globale du projet
+============================================================= */
 
-// -------------------- BDD
-// Connexion à la BDD
-$host = 'mysql:host=localhost;dbname=hair_it;';
-$login = 'root';
-$password = '';
-$options = [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,
-    PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4'
-];
-
-try
-{
-    $pdo = new PDO($host, $login, $password, $options);
-}
-catch(PDOExeption $e)
-{
-    die("🔴Un problème est survenu lors de la tentative de connexion à la base données : " . $e->getMessage());
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
+define('SALON_NOM',     'Hair IT');
+define('SALON_ADRESSE', '12 rue des Lilas, 75011 Paris');
+define('SALON_TEL',     '01 23 45 67 89');
+define('SALON_EMAIL',   'contact@hair-it.fr');
+define('SALON_ANNEE',   date('Y'));
 
-// -------------------- SESSION
-// Démmarage de la session
-session_start();
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'hair_it');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_CHAR', 'utf8mb4');
 
-// -------------------- CHEMIN
-// Création de la constante
-define("RACINE_SITE", "1PRJ3/");
+define('ADMIN_PSEUDO',   'admin');
+define('ADMIN_MDP_HASH', '$2y$10$/nAeV/1sRM36Y/X5ro2iWe0mz6qNVzj4xn81h06totgNJdT1pWAsW');
 
-// -------------------- VARIABLES
-// Initialisation de la variable contenue vide pour éviter les erreurs
-$contenu = '';
-
-// -------------------- AUTRES
-// Ici on inclus le fichier des fonctions
-require_once('fonction.inc.php');
-
-
-?>
+date_default_timezone_set('Europe/Paris');
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
