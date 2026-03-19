@@ -1,27 +1,19 @@
 <?php
-/* =============================================================
-   index.php — Page principale du salon
-   Utilise les includes : init → fonctions → haut → contenu → bas
-============================================================= */
-
 require_once 'inc/init.inc.php';
 
-// 🔒 Connexion obligatoire — redirige si pas connecté
 if (empty($_SESSION['membre'])) {
     header('Location: connexion.php');
     exit();
 }
 
-$contenu = '';
-
 require_once 'inc/fonction.inc.php';
 
-// Titre de la page (utilisé dans haut.inc.php)
 $pageTitle = SALON_NOM . ' — Salon de Coiffure Paris';
 
-// ── Traitement du formulaire de contact (section #contact) ──
 $contactSuccess = false;
 $contactErreurs = [];
+
+$services = getServices();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_contact'])) {
 
@@ -29,9 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_contact'])) {
     $email   = post('email');
     $message = post('message');
 
-    // Validation serveur
-    if (!validerNom($nom))       $contactErreurs[] = "Le nom est invalide (2–100 caractères).";
-    if (!validerEmail($email))   $contactErreurs[] = "L'adresse email est invalide.";
+    if (!validerNom($nom))        $contactErreurs[] = "Le nom est invalide (2–100 caractères).";
+    if (!validerEmail($email))    $contactErreurs[] = "L'adresse email est invalide.";
     if (!validerMessage($message)) $contactErreurs[] = "Le message doit faire entre 10 et 1000 caractères.";
 
     if (empty($contactErreurs)) {
@@ -43,13 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_contact'])) {
     }
 }
 
-// ── En-tête HTML ───────────────────────────────────────────
 require_once 'inc/haut.inc.php';
 ?>
 
-<!-- ============================================================
-     HERO — ACCUEIL
-============================================================ -->
 <section id="accueil" class="hero-section d-flex align-items-center">
   <div class="hero-overlay"></div>
   <div class="container position-relative text-center text-white">
@@ -63,9 +50,6 @@ require_once 'inc/haut.inc.php';
   </div>
 </section>
 
-<!-- ============================================================
-     SERVICES
-============================================================ -->
 <section id="services" class="py-5 section-light">
   <div class="container">
     <div class="section-header text-center mb-5">
@@ -82,21 +66,20 @@ require_once 'inc/haut.inc.php';
               <h5><?= propre($s['nom']) ?></h5>
               <p><?= propre($s['description']) ?></p>
               <span class="price-tag">
-                À partir de <?= number_format((float)$s['prix'], 2, ',', ' ') ?> €
+                À partir de <?= number_format((float)$s['prix_euros'], 2, ',', ' ') ?> €
               </span>
             </div>
           </div>
         <?php endforeach; ?>
       <?php else: ?>
-        <!-- Services statiques si la BDD n'est pas encore disponible -->
         <?php
         $servicesStatiques = [
-          ['✂', 'Coupe Femme',     'Coupe sur-mesure adaptée à votre morphologie et style.',     '35'],
-          ['✂', 'Coupe Homme',     'Coupe classique ou moderne, avec finitions soignées.',         '20'],
-          ['🎨','Coloration',       'Balayage, mèches, ombré hair — des couleurs qui subliment.',  '60'],
-          ['✨','Brushing',         'Lissage, ondulations, chignon — pour chaque occasion.',        '25'],
-          ['💧','Soin Capillaire',  'Masques, kératine, soins hydratants pour des cheveux sains.', '30'],
-          ['👶','Coupe Enfant',     'Coupe douce et rapide pour les plus jeunes.',                  '15'],
+          ['✂', 'Coupe Femme',    'Coupe sur-mesure adaptée à votre morphologie et style.',     '35'],
+          ['✂', 'Coupe Homme',    'Coupe classique ou moderne, avec finitions soignées.',         '20'],
+          ['🎨','Coloration',      'Balayage, mèches, ombré hair — des couleurs qui subliment.',  '60'],
+          ['✨','Brushing',        'Lissage, ondulations, chignon — pour chaque occasion.',        '25'],
+          ['💧','Soin Capillaire', 'Masques, kératine, soins hydratants pour des cheveux sains.', '30'],
+          ['👶','Coupe Enfant',    'Coupe douce et rapide pour les plus jeunes.',                  '15'],
         ];
         foreach ($servicesStatiques as [$icone, $nom, $desc, $prix]): ?>
           <div class="col-md-6 col-lg-4">
@@ -113,9 +96,6 @@ require_once 'inc/haut.inc.php';
   </div>
 </section>
 
-<!-- ============================================================
-     HORAIRES
-============================================================ -->
 <section id="horaires" class="py-5 section-dark">
   <div class="container">
     <div class="section-header text-center mb-5">
@@ -158,9 +138,6 @@ require_once 'inc/haut.inc.php';
   </div>
 </section>
 
-<!-- ============================================================
-     TÉMOIGNAGES
-============================================================ -->
 <section id="temoignages" class="py-5 section-light">
   <div class="container">
     <div class="section-header text-center mb-5">
@@ -171,9 +148,9 @@ require_once 'inc/haut.inc.php';
     <div class="row g-4">
       <?php
       $temoignages = [
-        ['S', 'Sophie M.',  'Cliente fidèle',   5, "Je suis cliente depuis 3 ans, la qualité est toujours au rendez-vous. Merci à toute l'équipe !"],
-        ['L', 'Laura B.',   'Mariée en 2024',   5, "Excellent accueil, coiffure parfaite pour mon mariage. Je recommande vivement ce salon !"],
-        ['T', 'Thomas K.',  'Nouveau client',   4, "Super salon, ambiance chaleureuse et résultat impeccable. Je reviendrai sans hésitation."],
+        ['S', 'Sophie M.',  'Cliente fidèle',  5, "Je suis cliente depuis 3 ans, la qualité est toujours au rendez-vous. Merci à toute l'équipe !"],
+        ['L', 'Laura B.',   'Mariée en 2024',  5, "Excellent accueil, coiffure parfaite pour mon mariage. Je recommande vivement ce salon !"],
+        ['T', 'Thomas K.',  'Nouveau client',  4, "Super salon, ambiance chaleureuse et résultat impeccable. Je reviendrai sans hésitation."],
       ];
       foreach ($temoignages as [$initiale, $nom, $role, $note, $texte]): ?>
         <div class="col-md-4">
@@ -196,9 +173,6 @@ require_once 'inc/haut.inc.php';
   </div>
 </section>
 
-<!-- ============================================================
-     CONTACT
-============================================================ -->
 <section id="contact" class="py-5 section-dark">
   <div class="container">
     <div class="section-header text-center mb-5">
@@ -208,7 +182,6 @@ require_once 'inc/haut.inc.php';
 
     <div class="row g-5 align-items-start">
 
-      <!-- Informations -->
       <div class="col-md-5">
         <div class="contact-info-box">
           <h5 class="text-gold mb-4">Informations</h5>
@@ -223,12 +196,9 @@ require_once 'inc/haut.inc.php';
         </div>
       </div>
 
-      <!-- Formulaire de contact -->
       <div class="col-md-7">
-        <form id="contactForm" method="POST" action="index.php#contact"
-              novalidate class="contact-form">
+        <form id="contactForm" method="POST" action="index.php#contact" novalidate class="contact-form">
 
-          <!-- Champ caché pour identifier ce formulaire -->
           <input type="hidden" name="form_contact" value="1">
 
           <?php if ($contactSuccess): ?>

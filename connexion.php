@@ -55,8 +55,8 @@ require_once 'inc/haut.inc.php';
 
                 <form action="connexion.php" method="POST" novalidate id="loginForm">
                     <div class="mb-3">
-                        <label for="pseudo" class="form-label text-white">Pseudo</label>
-                        <input type="text" class="form-control form-control-dark"
+                        <label for="pseudo" class="form-label">Pseudo</label>
+                        <input type="text" class="form-control"
                                id="pseudo" name="pseudo"
                                value="<?= propre($_POST['pseudo'] ?? '') ?>"
                                placeholder="Votre pseudo" required maxlength="100"
@@ -65,9 +65,9 @@ require_once 'inc/haut.inc.php';
                     </div>
 
                     <div class="mb-4">
-                        <label for="mdp" class="form-label text-white">Mot de passe</label>
+                        <label for="mdp" class="form-label">Mot de passe</label>
                         <div class="input-group">
-                            <input type="password" class="form-control form-control-dark"
+                            <input type="password" class="form-control"
                                    id="mdp" name="mdp"
                                    placeholder="Votre mot de passe"
                                    required maxlength="255" autocomplete="current-password">
@@ -84,7 +84,7 @@ require_once 'inc/haut.inc.php';
                 </form>
 
                 <div class="text-center mt-3">
-                    <a href="index.php" class="resa-back">
+                    <a href="index.php">
                         <i class="bi bi-arrow-left"></i> Retour à l'accueil
                     </a>
                 </div>
@@ -103,7 +103,7 @@ document.getElementById('toggleMdp').addEventListener('click', () => {
     const input = document.getElementById('mdp');
     const icon  = document.getElementById('eyeIcon');
     const show  = input.type === 'password';
-    input.type     = show ? 'text'         : 'password';
+    input.type     = show ? 'text'          : 'password';
     icon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
 });
 </script>

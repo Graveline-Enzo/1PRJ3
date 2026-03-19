@@ -1,13 +1,4 @@
 <?php
-/* =============================================================
-   inc/fonction.inc.php — Fonctions utilitaires & accès BDD
-============================================================= */
-
-
-/* -------------------------------------------------------------
-   UTILITAIRES
-------------------------------------------------------------- */
-
 function propre(string $val): string
 {
     return htmlspecialchars(trim($val), ENT_QUOTES, 'UTF-8');
@@ -40,11 +31,6 @@ function validerMessage(string $msg): bool
     return $len >= 10 && $len <= 1000;
 }
 
-
-/* -------------------------------------------------------------
-   BASE DE DONNÉES
-------------------------------------------------------------- */
-
 function getDB(): ?PDO
 {
     static $pdo = null;
@@ -63,11 +49,6 @@ function getDB(): ?PDO
     }
     return $pdo;
 }
-
-
-/* -------------------------------------------------------------
-   SERVICES
-------------------------------------------------------------- */
 
 function getServices(): array
 {
@@ -140,11 +121,6 @@ function supprimerService(int $id): bool
     }
 }
 
-
-/* -------------------------------------------------------------
-   DISPONIBILITÉS
-------------------------------------------------------------- */
-
 function getDisponibilites(): array
 {
     $pdo = getDB();
@@ -207,11 +183,6 @@ function supprimerDisponibilite(int $id): bool
     }
 }
 
-
-/* -------------------------------------------------------------
-   RÉSERVATIONS
-------------------------------------------------------------- */
-
 function getReservations(): array
 {
     $pdo = getDB();
@@ -258,15 +229,8 @@ function supprimerReservation(int $id): bool
     }
 }
 
-
-/* -------------------------------------------------------------
-   CONTACT
-------------------------------------------------------------- */
-
 function sauvegarderContact(string $nom, string $email, string $message): bool
 {
-    // Si tu ajoutes une table contacts plus tard, implémenter ici
-    // Pour l'instant on log et on retourne true (ou envoyer un mail)
     error_log("[Contact] De: $nom <$email> — $message");
     return true;
 }

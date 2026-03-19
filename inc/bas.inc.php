@@ -1,6 +1,3 @@
-</div>
-</section>
-
 <footer class="mt-auto">
     <div class="bg-dark text-white text-center py-3">
         <p class="mb-1">© <?= SALON_ANNEE ?> <strong><?= SALON_NOM ?></strong> — Tous droits réservés.</p>

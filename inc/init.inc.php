@@ -1,8 +1,4 @@
 <?php
-/* =============================================================
-   inc/init.inc.php — Initialisation globale du projet
-============================================================= */
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
