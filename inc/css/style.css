@@ -25,7 +25,7 @@ header .btn-outline-success {
   --bs-btn-active-border-color: #ffa500;
 }
 
-.salon-content h2 {
+.salon-content h1 {
     font-size: 5rem;
     font-weight: 900;
 }
