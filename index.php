@@ -1,6 +1,5 @@
 <?php
 require_once 'inc/init.inc.php';
-
 require_once 'inc/fonction.inc.php';
 
 $pageTitle = SALON_NOM . ' — Salon de Coiffure Paris';
@@ -17,8 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_contact'])) {
     $email   = post('email');
     $message = post('message');
 
-    if (!validerNom($nom))        $contactErreurs[] = "Le nom est invalide (2–100 caractères).";
-    if (!validerEmail($email))    $contactErreurs[] = "L'adresse email est invalide.";
+    if (!validerNom($nom))         $contactErreurs[] = "Le nom est invalide (2–100 caractères).";
+    if (!validerEmail($email))     $contactErreurs[] = "L'adresse email est invalide.";
     if (!validerMessage($message)) $contactErreurs[] = "Le message doit faire entre 10 et 1000 caractères.";
 
     if (empty($contactErreurs)) {
@@ -100,7 +99,6 @@ require_once 'inc/haut.inc.php';
   </div>
 </section>
 
-
 <section id="horaires" class="py-5 section-dark">
   <div class="container">
     <div class="section-header text-center mb-5">
@@ -112,26 +110,19 @@ require_once 'inc/haut.inc.php';
       <div class="col-md-8 col-lg-6">
         <div class="horaires-card">
           <?php
-          $joursOrdre = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
-
-          // Indexer les dispos par jour
+          $joursOrdre   = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
           $dispoParJour = [];
           foreach ($dispos as $d) {
               $dispoParJour[$d['jour_semaine']] = $d;
           }
-
           foreach ($joursOrdre as $jour):
-              $d = $dispoParJour[$jour] ?? null;
+              $d      = $dispoParJour[$jour] ?? null;
               $ouvert = $d && $d['actif'] === 'ouvert';
           ?>
             <div class="horaire-row">
               <span><?= ucfirst($jour) ?></span>
               <?php if ($ouvert): ?>
-                <span>
-                  <?= date('G\hi', strtotime($d['heure_debut'])) ?>
-                  –
-                  <?= date('G\hi', strtotime($d['heure_fin'])) ?>
-                </span>
+                <span><?= date('G\hi', strtotime($d['heure_debut'])) ?> – <?= date('G\hi', strtotime($d['heure_fin'])) ?></span>
               <?php else: ?>
                 <span class="text-muted fst-italic">Fermé</span>
               <?php endif; ?>
@@ -217,7 +208,6 @@ require_once 'inc/haut.inc.php';
               <i class="bi bi-check-circle-fill"></i>
               Votre message a bien été envoyé. Merci !
             </div>
-
           <?php elseif (!empty($contactErreurs)): ?>
             <div class="alert alert-danger">
               <ul class="mb-0 ps-3">
@@ -229,29 +219,21 @@ require_once 'inc/haut.inc.php';
           <?php endif; ?>
 
           <div class="mb-3">
-            <label for="nom" class="form-label text-white">
-              Nom complet <span class="text-danger">*</span>
-            </label>
+            <label for="nom" class="form-label text-white">Nom complet <span class="text-danger">*</span></label>
             <input type="text" class="form-control form-control-dark" id="nom" name="nom"
-                   value="<?= propre(post('nom')) ?>"
-                   placeholder="Jean Dupont" required minlength="2" maxlength="100">
+                   value="<?= propre(post('nom')) ?>" placeholder="Jean Dupont" required minlength="2" maxlength="100">
             <div class="invalid-feedback">Veuillez entrer votre nom.</div>
           </div>
 
           <div class="mb-3">
-            <label for="email" class="form-label text-white">
-              Email <span class="text-danger">*</span>
-            </label>
+            <label for="email" class="form-label text-white">Email <span class="text-danger">*</span></label>
             <input type="email" class="form-control form-control-dark" id="email" name="email"
-                   value="<?= propre(post('email')) ?>"
-                   placeholder="jean@exemple.fr" required maxlength="150">
+                   value="<?= propre(post('email')) ?>" placeholder="jean@exemple.fr" required maxlength="150">
             <div class="invalid-feedback">Veuillez entrer un email valide.</div>
           </div>
 
           <div class="mb-3">
-            <label for="message" class="form-label text-white">
-              Message <span class="text-danger">*</span>
-            </label>
+            <label for="message" class="form-label text-white">Message <span class="text-danger">*</span></label>
             <textarea class="form-control form-control-dark" id="message" name="message"
                       rows="5" placeholder="Votre message..." required
                       minlength="10" maxlength="1000"><?= propre(post('message')) ?></textarea>

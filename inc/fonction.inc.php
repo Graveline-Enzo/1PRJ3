@@ -76,7 +76,7 @@ function getService(int $id): ?array
     }
 }
 
-function creerService(string $nom, string $desc, int $duree, int $prix): bool
+function creerService(string $nom, string $desc, int $duree, int $prix): int|false
 {
     $pdo = getDB();
     if (!$pdo) return false;
@@ -85,7 +85,8 @@ function creerService(string $nom, string $desc, int $duree, int $prix): bool
             "INSERT INTO services (nom, description, duree_minutes, prix_euros)
              VALUES (:nom, :desc, :duree, :prix)"
         );
-        return $stmt->execute([':nom' => $nom, ':desc' => $desc, ':duree' => $duree, ':prix' => $prix]);
+        $stmt->execute([':nom' => $nom, ':desc' => $desc, ':duree' => $duree, ':prix' => $prix]);
+        return (int) $pdo->lastInsertId(); // ← retourne l'id généré
     } catch (PDOException $e) {
         error_log('[creerService] ' . $e->getMessage());
         return false;
@@ -138,7 +139,7 @@ function getDisponibilites(): array
     }
 }
 
-function creerDisponibilite(string $jour, string $debut, string $fin, string $actif): bool
+function creerDisponibilite(string $jour, string $debut, string $fin, string $actif): int|false
 {
     $pdo = getDB();
     if (!$pdo) return false;
@@ -147,7 +148,8 @@ function creerDisponibilite(string $jour, string $debut, string $fin, string $ac
             "INSERT INTO disponibilites (jour_semaine, heure_debut, heure_fin, actif)
              VALUES (:jour, :debut, :fin, :actif)"
         );
-        return $stmt->execute([':jour' => $jour, ':debut' => $debut, ':fin' => $fin, ':actif' => $actif]);
+        $stmt->execute([':jour' => $jour, ':debut' => $debut, ':fin' => $fin, ':actif' => $actif]);
+        return (int) $pdo->lastInsertId(); // ← retourne l'id généré
     } catch (PDOException $e) {
         error_log('[creerDispo] ' . $e->getMessage());
         return false;
