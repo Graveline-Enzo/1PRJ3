@@ -97,14 +97,15 @@ require_once 'inc/haut.inc.php';
 
 <section id="horaires" class="py-5 section-dark">
   <div class="container">
-    <div class="section-header text-center mb-5">
+    <div class="text-center mb-5">
       <span class="section-label">Quand nous trouver</span>
-      <h2 class="section-title text-white">Horaires d'Ouverture</h2>
+      <h2 class="section-title text-black">Horaires d'Ouverture</h2>
     </div>
 
     <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="horaires-card">
+      <div class="col-md-8 col-lg-5">
+
+        <div class="rounded-3 overflow-hidden shadow-sm">
           <?php
           $joursOrdre   = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
           $dispoParJour = [];
@@ -115,22 +116,26 @@ require_once 'inc/haut.inc.php';
               $d      = $dispoParJour[$jour] ?? null;
               $ouvert = $d && $d['actif'] === 'ouvert';
           ?>
-            <div class="horaire-row">
-              <span><?= ucfirst($jour) ?></span>
+            <div class="d-flex justify-content-between align-items-center px-4 py-3 bg-white border-bottom <?= !$ouvert ? 'opacity-50' : '' ?>">
+              <span class="fw-medium d-flex align-items-center gap-2 text-dark">
+                <span class="rounded-circle d-inline-block" style="width:8px;height:8px;background:<?= $ouvert ? '#28a745' : '#dc3545' ?>"></span>
+                <?= ucfirst($jour) ?>
+              </span>
               <?php if ($ouvert): ?>
-                <span><?= date('G\hi', strtotime($d['heure_debut'])) ?> – <?= date('G\hi', strtotime($d['heure_fin'])) ?></span>
+                <span class="text-muted small"><?= date('G\hi', strtotime($d['heure_debut'])) ?> – <?= date('G\hi', strtotime($d['heure_fin'])) ?></span>
               <?php else: ?>
-                <span class="text-muted fst-italic">Fermé</span>
+                <span class="text-muted small fst-italic">Fermé</span>
               <?php endif; ?>
             </div>
           <?php endforeach; ?>
         </div>
 
         <div class="text-center mt-4">
-          <a href="reservation.php" class="btn btn-gold btn-lg">
+          <a href="reservation.php" class="btn btn-warning fw-semibold px-4 py-2 rounded-pill">
             <i class="bi bi-calendar-check me-2"></i>Prendre rendez-vous
           </a>
         </div>
+
       </div>
     </div>
   </div>
