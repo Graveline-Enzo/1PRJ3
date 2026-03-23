@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         session_regenerate_id(true);
         $_SESSION['membre'] = ['pseudo' => $pseudo];
-        $redirect = $_SESSION['redirect_apres_connexion'] ?? 'index.php';
+        $redirect = $_SESSION['redirect_apres_connexion'] ?? 'admin.php';
         unset($_SESSION['redirect_apres_connexion']);
         header('Location: ' . $redirect);
         exit();

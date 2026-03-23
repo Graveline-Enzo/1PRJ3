@@ -1,6 +1,11 @@
 <?php
 require_once 'inc/init.inc.php';
 
+if (empty($_SESSION['membre'])) {
+    header('Location: connexion.php');
+    exit();
+}
+
 require_once 'inc/fonction.inc.php';
 
 $pageTitle = SALON_NOM . ' — Salon de Coiffure Paris';
@@ -32,23 +37,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_contact'])) {
 require_once 'inc/haut.inc.php';
 ?>
 
-<section id="accueil" class="salon-presentation d-flex align-items-center px-5" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('./ressource/salon-background.jpg'); background-size: cover; background-position: center; min-height: 100vh;">
-  <div class="salon-content px-5 text-white" style="max-width: 700px;">
-    <h1 class="display-1 fw-black text-white mb-4">Hair it</h1>
-    <p class="fs-5 lh-lg mb-4">Depuis plus de 15 ans, nous sublimions votre beauté naturelle avec passion et expertise. Notre équipe de coiffeurs professionnels vous accueille dans un cadre élégant et chaleureux pour une expérience unique.</p>
-    <div class="d-flex gap-3 mb-5 flex-wrap">
-      <a href="reservation.php" class="btn rounded-pill px-4 py-3 fw-bold text-white" style="background-color: var(--orange);">Prendre rendez-vous</a>
-      <a href="#services" class="btn btn-outline-light rounded-pill px-4 py-3 fw-bold">Découvrir nos services</a>
-    </div>
-    <div class="d-flex gap-5 pt-3 border-top border-secondary">
-      <div>
-        <strong class="fs-4 d-block">15+</strong>
-        <p class="mb-0 small text-white-50">Années d'expérience</p>
-      </div>
-      <div>
-        <strong class="fs-4 d-block">5000+</strong>
-        <p class="mb-0 small text-white-50">Clients satisfaits</p>
-      </div>
+<section id="accueil" class="hero-section d-flex align-items-center">
+  <div class="hero-overlay"></div>
+  <div class="container position-relative text-center text-white">
+    <p class="hero-tagline">Bienvenue dans notre salon</p>
+    <h1 class="hero-title">L'Art de la Coiffure</h1>
+    <p class="hero-subtitle">Un espace dédié à votre beauté, à Paris depuis 2010.</p>
+    <div class="mt-4 d-flex gap-3 justify-content-center flex-wrap">
+      <a href="reservation.php" class="btn btn-gold btn-lg">Prendre rendez-vous</a>
+      <a href="#services"       class="btn btn-outline-light btn-lg">Nos services</a>
     </div>
   </div>
 </section>
