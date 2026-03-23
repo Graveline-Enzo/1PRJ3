@@ -9,6 +9,7 @@ $contactSuccess = false;
 $contactErreurs = [];
 
 $services = getServices();
+$dispos   = getDisponibilites();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_contact'])) {
 
@@ -32,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_contact'])) {
 require_once 'inc/haut.inc.php';
 ?>
 
-<section id="accueil" class="salon-presentation d-flex align-items-center px-5" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('./ressource/salon-background.jpg'); background-size: cover; background-position: center; min-height: 100vh;">
+<section id="accueil" class="salon-presentation d-flex align-items-center" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('./ressource/salon-background.jpg'); background-size: cover; background-position: center; height: 100vh; margin-top: -56px; padding-top: 56px;">
   <div class="salon-content px-5 text-white" style="max-width: 700px;">
     <h1 class="display-1 fw-black text-white mb-4">Hair it</h1>
     <p class="fs-5 lh-lg mb-4">Depuis plus de 15 ans, nous sublimions votre beauté naturelle avec passion et expertise. Notre équipe de coiffeurs professionnels vous accueille dans un cadre élégant et chaleureux pour une expérience unique.</p>
@@ -99,6 +100,7 @@ require_once 'inc/haut.inc.php';
   </div>
 </section>
 
+
 <section id="horaires" class="py-5 section-dark">
   <div class="container">
     <div class="section-header text-center mb-5">
@@ -110,20 +112,26 @@ require_once 'inc/haut.inc.php';
       <div class="col-md-8 col-lg-6">
         <div class="horaires-card">
           <?php
-          $horaires = [
-            'Lundi'    => null,
-            'Mardi'    => '9h00 – 19h00',
-            'Mercredi' => '9h00 – 19h00',
-            'Jeudi'    => '9h00 – 20h00',
-            'Vendredi' => '9h00 – 20h00',
-            'Samedi'   => '8h30 – 18h30',
-            'Dimanche' => null,
-          ];
-          foreach ($horaires as $jour => $heure): ?>
+          $joursOrdre = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+
+          // Indexer les dispos par jour
+          $dispoParJour = [];
+          foreach ($dispos as $d) {
+              $dispoParJour[$d['jour_semaine']] = $d;
+          }
+
+          foreach ($joursOrdre as $jour):
+              $d = $dispoParJour[$jour] ?? null;
+              $ouvert = $d && $d['actif'] === 'ouvert';
+          ?>
             <div class="horaire-row">
-              <span><?= $jour ?></span>
-              <?php if ($heure): ?>
-                <span><?= $heure ?></span>
+              <span><?= ucfirst($jour) ?></span>
+              <?php if ($ouvert): ?>
+                <span>
+                  <?= date('G\hi', strtotime($d['heure_debut'])) ?>
+                  –
+                  <?= date('G\hi', strtotime($d['heure_fin'])) ?>
+                </span>
               <?php else: ?>
                 <span class="text-muted fst-italic">Fermé</span>
               <?php endif; ?>
