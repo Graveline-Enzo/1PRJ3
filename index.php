@@ -61,42 +61,38 @@ require_once 'inc/haut.inc.php';
       <h2 class="section-title">Nos Services</h2>
     </div>
 
-    <div class="row g-4">
-      <?php if (!empty($services)): ?>
+    <?php if (empty($services)): ?>
+      <p class="text-center text-muted">Aucun service disponible pour le moment.</p>
+    <?php else: ?>
+      <div class="row g-4">
         <?php foreach ($services as $s): ?>
           <div class="col-md-6 col-lg-4">
-            <div class="service-card h-100">
-              <div class="service-icon"><i class="bi bi-scissors"></i></div>
-              <h5><?= propre($s['nom']) ?></h5>
-              <p><?= propre($s['description']) ?></p>
-              <span class="price-tag">
-                À partir de <?= number_format((float)$s['prix_euros'], 2, ',', ' ') ?> €
-              </span>
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+              <div class="card-body d-flex flex-column p-4">
+
+                <div class="bg-warning bg-opacity-10 rounded-3 p-2 mb-3 d-inline-flex align-self-start">
+                  <i class="bi bi-scissors fs-4 text-warning"></i>
+                </div>
+
+                <h5 class="card-title fw-bold"><?= propre($s['nom']) ?></h5>
+                <p class="card-text text-muted flex-grow-1"><?= propre($s['description']) ?></p>
+
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                  <span class="fw-bold text-warning fs-5">
+                    <?= number_format((float)$s['prix_euros'], 2, ',', ' ') ?> €
+                  </span>
+                  <span class="text-muted small">
+                    <i class="bi bi-clock me-1"></i><?= (int)$s['duree_minutes'] ?> min
+                  </span>
+                </div>
+
+              </div>
             </div>
           </div>
         <?php endforeach; ?>
-      <?php else: ?>
-        <?php
-        $servicesStatiques = [
-          ['✂', 'Coupe Femme',    'Coupe sur-mesure adaptée à votre morphologie et style.',     '35'],
-          ['✂', 'Coupe Homme',    'Coupe classique ou moderne, avec finitions soignées.',         '20'],
-          ['🎨','Coloration',      'Balayage, mèches, ombré hair — des couleurs qui subliment.',  '60'],
-          ['✨','Brushing',        'Lissage, ondulations, chignon — pour chaque occasion.',        '25'],
-          ['💧','Soin Capillaire', 'Masques, kératine, soins hydratants pour des cheveux sains.', '30'],
-          ['👶','Coupe Enfant',    'Coupe douce et rapide pour les plus jeunes.',                  '15'],
-        ];
-        foreach ($servicesStatiques as [$icone, $nom, $desc, $prix]): ?>
-          <div class="col-md-6 col-lg-4">
-            <div class="service-card h-100">
-              <div class="service-icon"><i class="bi bi-scissors"></i></div>
-              <h5><?= $nom ?></h5>
-              <p><?= $desc ?></p>
-              <span class="price-tag">À partir de <?= $prix ?> €</span>
-            </div>
-          </div>
-        <?php endforeach; ?>
-      <?php endif; ?>
-    </div>
+      </div>
+    <?php endif; ?>
+
   </div>
 </section>
 

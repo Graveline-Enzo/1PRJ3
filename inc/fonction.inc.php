@@ -55,7 +55,7 @@ function getServices(): array
     $pdo = getDB();
     if (!$pdo) return [];
     try {
-        return $pdo->query("SELECT * FROM services ORDER BY nom ASC")->fetchAll();
+        return $pdo->query("SELECT * FROM services ORDER BY id ASC")->fetchAll();
     } catch (PDOException $e) {
         error_log('[Services] ' . $e->getMessage());
         return [];
