@@ -1,11 +1,6 @@
 <?php
 require_once 'inc/init.inc.php';
 
-if (empty($_SESSION['membre'])) {
-    header('Location: connexion.php');
-    exit();
-}
-
 require_once 'inc/fonction.inc.php';
 
 $pageTitle = SALON_NOM . ' — Salon de Coiffure Paris';
