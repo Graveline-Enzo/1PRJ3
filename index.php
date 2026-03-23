@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_contact'])) {
     $nom     = post('nom');
     $email   = post('email');
     $message = post('message');
-    
+
     if (!validerNom($nom))         $contactErreurs[] = "Le nom est invalide (2–100 caractères).";
     if (!validerEmail($email))     $contactErreurs[] = "L'adresse email est invalide.";
     if (!validerMessage($message)) $contactErreurs[] = "Le message doit faire entre 10 et 1000 caractères.";

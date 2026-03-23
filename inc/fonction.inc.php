@@ -86,7 +86,7 @@ function creerService(string $nom, string $desc, int $duree, int $prix): int|fal
              VALUES (:nom, :desc, :duree, :prix)"
         );
         $stmt->execute([':nom' => $nom, ':desc' => $desc, ':duree' => $duree, ':prix' => $prix]);
-        return (int) $pdo->lastInsertId(); // ← retourne l'id généré
+        return (int) $pdo->lastInsertId();
     } catch (PDOException $e) {
         error_log('[creerService] ' . $e->getMessage());
         return false;
@@ -149,7 +149,7 @@ function creerDisponibilite(string $jour, string $debut, string $fin, string $ac
              VALUES (:jour, :debut, :fin, :actif)"
         );
         $stmt->execute([':jour' => $jour, ':debut' => $debut, ':fin' => $fin, ':actif' => $actif]);
-        return (int) $pdo->lastInsertId(); // ← retourne l'id généré
+        return (int) $pdo->lastInsertId(); 
     } catch (PDOException $e) {
         error_log('[creerDispo] ' . $e->getMessage());
         return false;
