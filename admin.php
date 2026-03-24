@@ -196,40 +196,92 @@ foreach ($dispos as $d) {
 
     <?php elseif ($tab === 'reservations'): ?>
 
-        <table class="table table-bordered bg-white">
-            <thead class="table-dark"><tr><th>Client</th><th>Email</th><th>Tél</th><th>Service</th><th>Date</th><th>Heure</th><th>Statut</th><th></th></tr></thead>
-            <tbody>
-            <?php foreach ($reservations as $r): ?>
-                <tr>
-                    <td><?= propre($r['nom_client']) ?></td>
-                    <td><?= propre($r['email_client']) ?></td>
-                    <td><?= propre($r['telephone'] ?? '—') ?></td>
-                    <td><?= propre($r['service_nom'] ?? '—') ?></td>
-                    <td><?= date('d/m/Y', strtotime($r['date_rdv'])) ?></td>
-                    <td><?= substr($r['heure_rdv'], 0, 5) ?></td>
-                    <td>
-                        <form method="POST" class="d-flex gap-1">
-                            <input type="hidden" name="action" value="resa_statut">
-                            <input type="hidden" name="id" value="<?= $r['id'] ?>">
-                            <select name="statut" class="form-select form-select-sm">
-                                <option value="en_attente" <?= $r['statut']==='en_attente'?'selected':'' ?>>En attente</option>
-                                <option value="confirme"   <?= $r['statut']==='confirme'  ?'selected':'' ?>>Confirmé</option>
-                                <option value="annule"     <?= $r['statut']==='annule'    ?'selected':'' ?>>Annulé</option>
-                            </select>
-                            <button class="btn btn-sm btn-primary">✔</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form method="POST" onsubmit="return confirm('Supprimer ?')">
-                            <input type="hidden" name="action" value="resa_supprimer">
-                            <input type="hidden" name="id" value="<?= $r['id'] ?>">
-                            <button class="btn btn-sm btn-danger">✖</button>
-                        </form>
-                    </td>
-                </tr>
+        <?php
+        // Tri par date ASC puis heure ASC (les plus proches en premier)
+        usort($reservations, function($a, $b) {
+            $cmp = strcmp($a['date_rdv'], $b['date_rdv']);
+            return $cmp !== 0 ? $cmp : strcmp($a['heure_rdv'], $b['heure_rdv']);
+        });
+
+        // Groupement par date
+        $resaParJour = [];
+        foreach ($reservations as $r) {
+            $resaParJour[$r['date_rdv']][] = $r;
+        }
+
+        $joursLabel = ['Monday'=>'Lundi','Tuesday'=>'Mardi','Wednesday'=>'Mercredi',
+                       'Thursday'=>'Jeudi','Friday'=>'Vendredi','Saturday'=>'Samedi','Sunday'=>'Dimanche'];
+        $moisLabel  = ['01'=>'janvier','02'=>'février','03'=>'mars','04'=>'avril','05'=>'mai',
+                       '06'=>'juin','07'=>'juillet','08'=>'août','09'=>'septembre','10'=>'octobre',
+                       '11'=>'novembre','12'=>'décembre'];
+        $today    = date('Y-m-d');
+        $tomorrow = date('Y-m-d', strtotime('+1 day'));
+        ?>
+
+        <?php if (empty($resaParJour)): ?>
+            <p class="text-muted text-center py-4">Aucune réservation pour le moment.</p>
+        <?php else: ?>
+            <?php foreach ($resaParJour as $date => $resas): ?>
+                <?php
+                $ts       = strtotime($date);
+                $jourNom  = $joursLabel[date('l', $ts)] ?? date('l', $ts);
+                $moisNom  = $moisLabel[date('m', $ts)] ?? date('m', $ts);
+                $label    = $jourNom . ' ' . date('d', $ts) . ' ' . $moisNom . ' ' . date('Y', $ts);
+                $isPast   = $date < $today;
+                $isToday  = $date === $today;
+                $isTomorrow = $date === $tomorrow;
+                if ($isToday)        $badge = ' <span style="font-size:.75rem;font-weight:400;color:#198754;">— Aujourd\'hui</span>';
+                elseif ($isTomorrow) $badge = ' <span style="font-size:.75rem;font-weight:400;color:#856404;">— Demain</span>';
+                elseif ($isPast)     $badge = ' <span style="font-size:.75rem;font-weight:400;color:#6c757d;">— Passé</span>';
+                else                 $badge = '';
+                ?>
+
+                <div class="mb-5">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <h6 class="mb-0 fw-bold text-dark" style="font-size:1rem;">
+                            <?= $label ?><?= $badge ?>
+                        </h6>
+                        <span class="text-muted small">(<?= count($resas) ?> réservation<?= count($resas) > 1 ? 's' : '' ?>)</span>
+                    </div>
+
+                    <table class="table table-bordered bg-white mb-0 <?= $isPast ? 'opacity-75' : '' ?>">
+                        <thead class="table-dark">
+                            <tr><th>Client</th><th>Email</th><th>Tél</th><th>Service</th><th>Heure</th><th>Statut</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($resas as $r): ?>
+                            <tr>
+                                <td><?= propre($r['nom_client']) ?></td>
+                                <td><?= propre($r['email_client']) ?></td>
+                                <td><?= propre($r['telephone'] ?? '—') ?></td>
+                                <td><?= propre($r['service_nom'] ?? '—') ?></td>
+                                <td><?= substr($r['heure_rdv'], 0, 5) ?></td>
+                                <td>
+                                    <form method="POST" class="d-flex gap-1">
+                                        <input type="hidden" name="action" value="resa_statut">
+                                        <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                                        <select name="statut" class="form-select form-select-sm">
+                                            <option value="en_attente" <?= $r['statut']==='en_attente'?'selected':'' ?>>En attente</option>
+                                            <option value="confirme"   <?= $r['statut']==='confirme'  ?'selected':'' ?>>Confirmé</option>
+                                            <option value="annule"     <?= $r['statut']==='annule'    ?'selected':'' ?>>Annulé</option>
+                                        </select>
+                                        <button class="btn btn-sm btn-primary">✔</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form method="POST" onsubmit="return confirm('Supprimer ?')">
+                                        <input type="hidden" name="action" value="resa_supprimer">
+                                        <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                                        <button class="btn btn-sm btn-danger">✖</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php endforeach; ?>
-            </tbody>
-        </table>
+        <?php endif; ?>
 
     <?php endif; ?>
 
