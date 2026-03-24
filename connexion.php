@@ -88,6 +88,8 @@ require_once 'inc/haut.inc.php';
                         <i class="bi bi-arrow-left"></i> Retour à l'accueil
                     </a>
                 </div>
+
+
             </div>
         </div>
     </div>

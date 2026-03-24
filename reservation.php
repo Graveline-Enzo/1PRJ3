@@ -9,7 +9,7 @@ $erreurs = [];
 $success = false;
 $recap   = null;
 
-// Validation et affichage du récap
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['etape'] === 'recap') {
 
     $service_id = (int)post('service_id');
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['e
     if (!validerEmail($email))                     $erreurs[] = "L'adresse email est invalide.";
     if (!preg_match('/^[0-9]{10}$/', $telephone))  $erreurs[] = "Le téléphone doit contenir 10 chiffres.";
 
-    // Vérifier que le service existe
+
     $serviceChoisi = null;
     foreach ($services as $s) {
         if ((int)$s['id'] === $service_id) { $serviceChoisi = $s; break; }
@@ -37,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['e
     }
 }
 
-// Confirmation et insertion en BDD
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['etape'] === 'confirmer') {
 
     $service_id = (int)post('service_id');
@@ -73,7 +72,6 @@ require_once 'inc/haut.inc.php';
 
       <?php if ($success): ?>
 
-        <!-- Confirmation -->
         <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
           <div class="mb-3">
             <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width:72px;height:72px;">
@@ -87,7 +85,6 @@ require_once 'inc/haut.inc.php';
 
       <?php elseif ($recap): ?>
 
-        <!-- Récapitulatif -->
         <div class="card border-0 shadow-sm rounded-4 p-4">
           <h4 class="fw-bold mb-4 text-center">Confirmer votre réservation</h4>
 
@@ -119,7 +116,6 @@ require_once 'inc/haut.inc.php';
           </ul>
 
           <div class="d-flex gap-3">
-            <!-- Bouton retour — repopule le formulaire -->
             <form method="POST" class="w-50">
               <input type="hidden" name="etape"      value="retour">
               <input type="hidden" name="service_id" value="<?= $recap['service_id'] ?>">
@@ -130,7 +126,6 @@ require_once 'inc/haut.inc.php';
               <button class="btn btn-outline-secondary rounded-pill w-100">Modifier</button>
             </form>
 
-            <!-- Bouton confirmation -->
             <form method="POST" class="w-50">
               <input type="hidden" name="etape"      value="confirmer">
               <input type="hidden" name="service_id" value="<?= $recap['service_id'] ?>">
@@ -145,7 +140,6 @@ require_once 'inc/haut.inc.php';
 
       <?php else: ?>
 
-        <!-- Formulaire -->
         <div class="card border-0 shadow-sm rounded-4 p-4">
           <div class="text-center mb-4">
             <div class="bg-warning bg-opacity-10 rounded-3 d-inline-flex align-items-center justify-content-center mb-3" style="width:56px;height:56px;">

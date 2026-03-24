@@ -255,9 +255,6 @@ function flashGreen(tr) {
     setTimeout(() => tr.style.background = '', 900);
 }
 
-/* ═══════════════════════════════════════
-   SERVICES — Ajout
-═══════════════════════════════════════ */
 const formServiceCreer = document.getElementById('formServiceCreer');
 if (formServiceCreer) {
     formServiceCreer.addEventListener('submit', async function(e) {
@@ -286,7 +283,6 @@ function creerLigneService(s) {
     return tr;
 }
 
-/* SERVICES — Modifier / Supprimer */
 const tbodyServices = document.getElementById('tbodyServices');
 if (tbodyServices) {
     tbodyServices.addEventListener('click', async function(e) {
@@ -319,9 +315,6 @@ if (tbodyServices) {
     });
 }
 
-/* ═══════════════════════════════════════
-   DISPOS — Ajout
-═══════════════════════════════════════ */
 const formDispoCreer = document.getElementById('formDispoCreer');
 if (formDispoCreer) {
     formDispoCreer.addEventListener('submit', async function(e) {
@@ -342,7 +335,6 @@ if (formDispoCreer) {
         }
         if (!inserted) tbody.appendChild(tr);
 
-        /* Retirer le jour du select */
         const sel = document.getElementById('selectJour');
         if (sel) {
             const opt = sel.querySelector(`option[value="${json.jour_semaine}"]`);
@@ -377,7 +369,6 @@ function creerLigneDispo(d) {
     return tr;
 }
 
-/* DISPOS — Modifier / Supprimer */
 const tbodyDispos = document.getElementById('tbodyDispos');
 if (tbodyDispos) {
     tbodyDispos.addEventListener('click', async function(e) {
@@ -407,7 +398,6 @@ if (tbodyDispos) {
             fd.append('id', id);
             const json = await ajaxPost(fd);
             if (json.ok) {
-                /* Remettre le jour dans le select */
                 const sel = document.getElementById('selectJour');
                 if (sel && jour) {
                     const opt    = document.createElement('option');
