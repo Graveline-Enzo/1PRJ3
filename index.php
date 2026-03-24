@@ -97,14 +97,15 @@ require_once 'inc/haut.inc.php';
 
 <section id="horaires" class="py-5 section-dark">
   <div class="container">
-    <div class="section-header text-center mb-5">
+    <div class="text-center mb-5">
       <span class="section-label">Quand nous trouver</span>
-      <h2 class="section-title text-white">Horaires d'Ouverture</h2>
+      <h2 class="section-title text-black">Horaires d'Ouverture</h2>
     </div>
 
     <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="horaires-card">
+      <div class="col-md-8 col-lg-5">
+
+        <div class="rounded-3 overflow-hidden shadow-sm">
           <?php
           $joursOrdre   = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
           $dispoParJour = [];
@@ -115,22 +116,26 @@ require_once 'inc/haut.inc.php';
               $d      = $dispoParJour[$jour] ?? null;
               $ouvert = $d && $d['actif'] === 'ouvert';
           ?>
-            <div class="horaire-row">
-              <span><?= ucfirst($jour) ?></span>
+            <div class="d-flex justify-content-between align-items-center px-4 py-3 bg-white border-bottom <?= !$ouvert ? 'opacity-50' : '' ?>">
+              <span class="fw-medium d-flex align-items-center gap-2 text-dark">
+                <span class="rounded-circle d-inline-block" style="width:8px;height:8px;background:<?= $ouvert ? '#28a745' : '#dc3545' ?>"></span>
+                <?= ucfirst($jour) ?>
+              </span>
               <?php if ($ouvert): ?>
-                <span><?= date('G\hi', strtotime($d['heure_debut'])) ?> – <?= date('G\hi', strtotime($d['heure_fin'])) ?></span>
+                <span class="text-muted small"><?= date('G\hi', strtotime($d['heure_debut'])) ?> – <?= date('G\hi', strtotime($d['heure_fin'])) ?></span>
               <?php else: ?>
-                <span class="text-muted fst-italic">Fermé</span>
+                <span class="text-muted small fst-italic">Fermé</span>
               <?php endif; ?>
             </div>
           <?php endforeach; ?>
         </div>
 
         <div class="text-center mt-4">
-          <a href="reservation.php" class="btn btn-gold btn-lg">
+          <a href="reservation.php" class="btn btn-warning fw-semibold px-4 py-2 rounded-pill">
             <i class="bi bi-calendar-check me-2"></i>Prendre rendez-vous
           </a>
         </div>
+
       </div>
     </div>
   </div>
@@ -146,23 +151,31 @@ require_once 'inc/haut.inc.php';
     <div class="row g-4">
       <?php
       $temoignages = [
-        ['S', 'Sophie M.',  'Cliente fidèle',  5, "Je suis cliente depuis 3 ans, la qualité est toujours au rendez-vous. Merci à toute l'équipe !"],
-        ['L', 'Laura B.',   'Mariée en 2024',  5, "Excellent accueil, coiffure parfaite pour mon mariage. Je recommande vivement ce salon !"],
-        ['T', 'Thomas K.',  'Nouveau client',  4, "Super salon, ambiance chaleureuse et résultat impeccable. Je reviendrai sans hésitation."],
+        ['S', 'Sophie M.',  5, "Je suis cliente depuis 3 ans, la qualité est toujours au rendez-vous. Merci à toute l'équipe !"],
+        ['L', 'Laura B.',   5, "Excellent accueil, coiffure parfaite pour mon mariage. Je recommande vivement ce salon !"],
+        ['T', 'Thomas K.',  4, "Super salon, ambiance chaleureuse et résultat impeccable. Je reviendrai sans hésitation."],
       ];
-      foreach ($temoignages as [$initiale, $nom, $role, $note, $texte]): ?>
+      foreach ($temoignages as [$initiale, $nom, $note, $texte]): ?>
         <div class="col-md-4">
-          <div class="temoignage-card">
-            <div class="stars mb-2">
-              <?= str_repeat('★', $note) . str_repeat('☆', 5 - $note) ?>
-            </div>
-            <p class="temoignage-text">"<?= propre($texte) ?>"</p>
-            <div class="temoignage-auteur">
-              <div class="avatar"><?= $initiale ?></div>
-              <div>
-                <strong><?= propre($nom) ?></strong>
-                <small class="d-block text-muted"><?= propre($role) ?></small>
+          <div class="card h-100 border-2 border-warning rounded-3 shadow-sm">
+            <div class="card-body p-4 d-flex flex-column">
+
+              <div class="text-warning mb-2" style="font-size:1.1rem;">
+                <?= str_repeat('★', $note) ?><span class="text-secondary"><?= str_repeat('★', 5 - $note) ?></span>
               </div>
+
+              <p class="card-text text-muted flex-grow-1 fst-italic">"<?= propre($texte) ?>"</p>
+
+              <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-dark fw-medium bg-warning"
+                     style="width:42px;height:42px;font-size:1rem;flex-shrink:0;">
+                  <?= $initiale ?>
+                </div>
+                <div>
+                  <strong class="d-block"><?= propre($nom) ?></strong>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
