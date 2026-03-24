@@ -236,3 +236,49 @@ function sauvegarderContact(string $nom, string $email, string $message): bool
     error_log("[Contact] De: $nom <$email> — $message");
     return true;
 }
+
+
+function getCreneauxDisponibles(string $date, int $duree_minutes): array
+{
+    $pdo = getDB();
+    if (!$pdo) return [];
+
+    $jours = ['Sunday'=>'dimanche','Monday'=>'lundi','Tuesday'=>'mardi',
+              'Wednesday'=>'mercredi','Thursday'=>'jeudi','Friday'=>'vendredi','Saturday'=>'samedi'];
+    $jourSemaine = $jours[date('l', strtotime($date))];
+
+    $stmt = $pdo->prepare("SELECT * FROM disponibilites WHERE jour_semaine = :jour AND actif = 'ouvert'");
+    $stmt->execute([':jour' => $jourSemaine]);
+    $dispo = $stmt->fetch();
+    if (!$dispo) return [];
+
+    $stmt = $pdo->prepare("SELECT heure_rdv, s.duree_minutes FROM reservations r
+                           JOIN services s ON r.service_id = s.id
+                           WHERE r.date_rdv = :date AND r.statut != 'annule'");
+    $stmt->execute([':date' => $date]);
+    $reservations = $stmt->fetchAll();
+
+    $creneaux = [];
+    $debut = strtotime($date . ' ' . substr($dispo['heure_debut'], 0, 5));
+    $fin   = strtotime($date . ' ' . substr($dispo['heure_fin'],   0, 5));
+
+    for ($t = $debut; $t + ($duree_minutes * 60) <= $fin; $t += 30 * 60) {
+        $heure = date('H:i', $t);
+        $disponible = true;
+
+        foreach ($reservations as $r) {
+            $r_debut = strtotime($date . ' ' . substr($r['heure_rdv'], 0, 5));
+            $r_fin   = $r_debut + ((int)$r['duree_minutes'] * 60);
+            $c_fin   = $t + ($duree_minutes * 60);
+
+            if ($t < $r_fin && $c_fin > $r_debut) {
+                $disponible = false;
+                break;
+            }
+        }
+
+        if ($disponible) $creneaux[] = $heure;
+    }
+
+    return $creneaux;
+}

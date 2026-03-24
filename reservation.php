@@ -4,28 +4,30 @@ require_once 'inc/fonction.inc.php';
 
 $pageTitle = 'Réservation — ' . SALON_NOM;
 $services  = getServices();
+$dispos    = getDisponibilites();
 
 $erreurs = [];
 $success = false;
 $recap   = null;
 
-// Validation et affichage du récap
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['etape'] === 'recap') {
 
     $service_id = (int)post('service_id');
+    $date_rdv   = post('date_rdv');
+    $heure_rdv  = post('heure_rdv');
     $nom        = post('nom');
     $prenom     = post('prenom');
     $email      = post('email');
     $telephone  = post('telephone');
 
-    // Validation
-    if ($service_id <= 0)                          $erreurs[] = "Veuillez sélectionner un service.";
-    if (!validerNom($nom))                         $erreurs[] = "Le nom est invalide (2–100 caractères).";
-    if (!validerNom($prenom))                      $erreurs[] = "Le prénom est invalide (2–100 caractères).";
-    if (!validerEmail($email))                     $erreurs[] = "L'adresse email est invalide.";
-    if (!preg_match('/^[0-9]{10}$/', $telephone))  $erreurs[] = "Le téléphone doit contenir 10 chiffres.";
+    if ($service_id <= 0)                                        $erreurs[] = "Veuillez sélectionner un service.";
+    if (!$date_rdv || !strtotime($date_rdv))                     $erreurs[] = "Veuillez sélectionner une date.";
+    if (!$heure_rdv || !preg_match('/^\d{2}:\d{2}$/', $heure_rdv)) $erreurs[] = "Veuillez sélectionner un créneau.";
+    if (!validerNom($nom))                                       $erreurs[] = "Le nom est invalide (2–100 caractères).";
+    if (!validerNom($prenom))                                    $erreurs[] = "Le prénom est invalide (2–100 caractères).";
+    if (!validerEmail($email))                                   $erreurs[] = "L'adresse email est invalide.";
+    if (!preg_match('/^[0-9]{10}$/', $telephone))                $erreurs[] = "Le téléphone doit contenir 10 chiffres.";
 
-    // Vérifier que le service existe
     $serviceChoisi = null;
     foreach ($services as $s) {
         if ((int)$s['id'] === $service_id) { $serviceChoisi = $s; break; }
@@ -33,14 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['e
     if (!$serviceChoisi) $erreurs[] = "Service invalide.";
 
     if (empty($erreurs)) {
-        $recap = compact('service_id', 'nom', 'prenom', 'email', 'telephone', 'serviceChoisi');
+        $recap = compact('service_id', 'date_rdv', 'heure_rdv', 'nom', 'prenom', 'email', 'telephone', 'serviceChoisi');
     }
 }
 
-// Confirmation et insertion en BDD
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['etape'] === 'confirmer') {
 
     $service_id = (int)post('service_id');
+    $date_rdv   = post('date_rdv');
+    $heure_rdv  = post('heure_rdv');
     $nom        = post('nom');
     $prenom     = post('prenom');
     $email      = post('email');
@@ -50,10 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['e
     if ($pdo) {
         $stmt = $pdo->prepare("
             INSERT INTO reservations (service_id, date_rdv, heure_rdv, nom_client, email_client, telephone, statut)
-            VALUES (:service_id, CURDATE(), NOW(), :nom_client, :email_client, :telephone, 'en_attente')
+            VALUES (:service_id, :date_rdv, :heure_rdv, :nom_client, :email_client, :telephone, 'en_attente')
         ");
         $stmt->execute([
             ':service_id'   => $service_id,
+            ':date_rdv'     => $date_rdv,
+            ':heure_rdv'    => $heure_rdv,
             ':nom_client'   => $prenom . ' ' . $nom,
             ':email_client' => $email,
             ':telephone'    => $telephone,
@@ -73,7 +78,6 @@ require_once 'inc/haut.inc.php';
 
       <?php if ($success): ?>
 
-        <!-- Confirmation -->
         <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
           <div class="mb-3">
             <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width:72px;height:72px;">
@@ -87,7 +91,6 @@ require_once 'inc/haut.inc.php';
 
       <?php elseif ($recap): ?>
 
-        <!-- Récapitulatif -->
         <div class="card border-0 shadow-sm rounded-4 p-4">
           <h4 class="fw-bold mb-4 text-center">Confirmer votre réservation</h4>
 
@@ -105,6 +108,15 @@ require_once 'inc/haut.inc.php';
               <strong class="text-warning"><?= number_format((float)$recap['serviceChoisi']['prix_euros'], 2, ',', ' ') ?> €</strong>
             </li>
             <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted">Date</span>
+              <strong><?= date('d/m/Y', strtotime($recap['date_rdv'])) ?></strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span class="text-muted">Heure</span>
+              <strong><?= propre($recap['heure_rdv']) ?></strong>
+            </li>
+            
+            <li class="list-group-item d-flex justify-content-between px-0">
               <span class="text-muted">Nom</span>
               <strong><?= propre($recap['prenom']) ?> <?= propre($recap['nom']) ?></strong>
             </li>
@@ -119,10 +131,11 @@ require_once 'inc/haut.inc.php';
           </ul>
 
           <div class="d-flex gap-3">
-            <!-- Bouton retour — repopule le formulaire -->
             <form method="POST" class="w-50">
               <input type="hidden" name="etape"      value="retour">
               <input type="hidden" name="service_id" value="<?= $recap['service_id'] ?>">
+              <input type="hidden" name="date_rdv"   value="<?= propre($recap['date_rdv']) ?>">
+              <input type="hidden" name="heure_rdv"  value="<?= propre($recap['heure_rdv']) ?>">
               <input type="hidden" name="nom"        value="<?= propre($recap['nom']) ?>">
               <input type="hidden" name="prenom"     value="<?= propre($recap['prenom']) ?>">
               <input type="hidden" name="email"      value="<?= propre($recap['email']) ?>">
@@ -130,10 +143,11 @@ require_once 'inc/haut.inc.php';
               <button class="btn btn-outline-secondary rounded-pill w-100">Modifier</button>
             </form>
 
-            <!-- Bouton confirmation -->
             <form method="POST" class="w-50">
               <input type="hidden" name="etape"      value="confirmer">
               <input type="hidden" name="service_id" value="<?= $recap['service_id'] ?>">
+              <input type="hidden" name="date_rdv"   value="<?= propre($recap['date_rdv']) ?>">
+              <input type="hidden" name="heure_rdv"  value="<?= propre($recap['heure_rdv']) ?>">
               <input type="hidden" name="nom"        value="<?= propre($recap['nom']) ?>">
               <input type="hidden" name="prenom"     value="<?= propre($recap['prenom']) ?>">
               <input type="hidden" name="email"      value="<?= propre($recap['email']) ?>">
@@ -145,7 +159,6 @@ require_once 'inc/haut.inc.php';
 
       <?php else: ?>
 
-        <!-- Formulaire -->
         <div class="card border-0 shadow-sm rounded-4 p-4">
           <div class="text-center mb-4">
             <div class="bg-warning bg-opacity-10 rounded-3 d-inline-flex align-items-center justify-content-center mb-3" style="width:56px;height:56px;">
@@ -174,12 +187,39 @@ require_once 'inc/haut.inc.php';
                 <option value="">— Choisir un service —</option>
                 <?php foreach ($services as $s): ?>
                   <option value="<?= $s['id'] ?>"
+                          data-duree="<?= (int)$s['duree_minutes'] ?>"
                     <?= (int)post('service_id') === (int)$s['id'] ? 'selected' : '' ?>>
                     <?= propre($s['nom']) ?> — <?= (int)$s['duree_minutes'] ?> min — <?= number_format((float)$s['prix_euros'], 2, ',', ' ') ?> €
                   </option>
                 <?php endforeach; ?>
               </select>
               <div class="invalid-feedback">Veuillez sélectionner un service.</div>
+            </div>
+
+            <div class="mb-3" id="bloc-calendrier" style="display:none;">
+              <label class="form-label fw-semibold">Date <span class="text-danger">*</span></label>
+              <div id="calendrier" class="border rounded-3 p-3 bg-light">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="prev-mois">‹</button>
+                  <span class="fw-bold" id="label-mois"></span>
+                  <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="next-mois">›</button>
+                </div>
+                <div class="row g-1 text-center mb-1">
+                  <?php foreach (['Lu','Ma','Me','Je','Ve','Sa','Di'] as $j): ?>
+                    <div class="col"><small class="text-muted fw-semibold"><?= $j ?></small></div>
+                  <?php endforeach; ?>
+                </div>
+                <div id="grille-jours" class="row g-1 text-center"></div>
+              </div>
+              <input type="hidden" name="date_rdv" id="date_rdv" value="<?= propre(post('date_rdv')) ?>">
+              <div class="text-danger small mt-1" id="error-date"></div>
+            </div>
+
+            <div class="mb-3" id="bloc-creneaux" style="display:none;">
+              <label class="form-label fw-semibold">Créneau <span class="text-danger">*</span></label>
+              <div id="liste-creneaux" class="d-flex flex-wrap gap-2"></div>
+              <input type="hidden" name="heure_rdv" id="heure_rdv" value="<?= propre(post('heure_rdv')) ?>">
+              <div class="text-danger small mt-1" id="error-creneau"></div>
             </div>
 
             <div class="row g-3 mb-3">
@@ -228,12 +268,140 @@ require_once 'inc/haut.inc.php';
 </div>
 
 <script>
+// ===== CALENDRIER =====
+let moisCourant = new Date();
+moisCourant.setDate(1);
+let dateSelectionnee = null;
+let dureeSelectionnee = 0;
+
+const joursDispoSalon = <?php
+    $joursOuverts = array_filter($dispos, fn($d) => $d['actif'] === 'ouvert');
+    $noms = ['lundi'=>1,'mardi'=>2,'mercredi'=>3,'jeudi'=>4,'vendredi'=>5,'samedi'=>6,'dimanche'=>0];
+    $indices = array_map(fn($d) => $noms[$d['jour_semaine']], $joursOuverts);
+    echo json_encode(array_values($indices));
+?>;
+
+function renderCalendrier() {
+    const mois = moisCourant.getMonth();
+    const annee = moisCourant.getFullYear();
+    const noms = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+    document.getElementById('label-mois').textContent = noms[mois] + ' ' + annee;
+
+    const grille = document.getElementById('grille-jours');
+    grille.innerHTML = '';
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dernier = new Date(annee, mois + 1, 0);
+
+    let jourDebut = new Date(annee, mois, 1).getDay();
+    jourDebut = jourDebut === 0 ? 6 : jourDebut - 1;
+    for (let i = 0; i < jourDebut; i++) grille.innerHTML += `<div class="col"></div>`;
+
+    for (let j = 1; j <= dernier.getDate(); j++) {
+        const date = new Date(annee, mois, j);
+        const dateStr = annee + '-' + String(mois+1).padStart(2,'0') + '-' + String(j).padStart(2,'0');
+        const passe = date < today;
+        const ouvert = joursDispoSalon.includes(date.getDay());
+        const selectionne = dateStr === dateSelectionnee;
+
+        let classe = 'btn btn-sm w-100 ';
+        if (selectionne)            classe += 'btn-warning fw-bold';
+        else if (passe || !ouvert)  classe += 'btn-light text-muted';
+        else                        classe += 'btn-outline-secondary';
+
+        grille.innerHTML += `
+          <div class="col">
+            <button type="button" class="${classe}"
+              ${passe || !ouvert ? 'disabled' : ''}
+              onclick="selectionnerDate('${dateStr}')">${j}</button>
+          </div>`;
+    }
+}
+
+function selectionnerDate(dateStr) {
+    dateSelectionnee = dateStr;
+    document.getElementById('date_rdv').value = dateStr;
+    document.getElementById('heure_rdv').value = '';
+    document.getElementById('error-date').textContent = '';
+    renderCalendrier();
+    chargerCreneaux(dateStr);
+}
+
+function chargerCreneaux(dateStr) {
+    const bloc = document.getElementById('bloc-creneaux');
+    const liste = document.getElementById('liste-creneaux');
+    liste.innerHTML = '<span class="text-muted small">Chargement...</span>';
+    bloc.style.display = 'block';
+
+    fetch(`creneaux.php?date=${dateStr}&duree=${dureeSelectionnee}`)
+        .then(r => r.json())
+        .then(creneaux => {
+            liste.innerHTML = '';
+            if (creneaux.length === 0) {
+                liste.innerHTML = '<span class="text-muted small">Aucun créneau disponible ce jour.</span>';
+                return;
+            }
+            creneaux.forEach(h => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-outline-secondary btn-sm rounded-pill px-3';
+                btn.textContent = h;
+                btn.onclick = () => {
+                    document.querySelectorAll('#liste-creneaux .btn').forEach(b => {
+                        b.classList.remove('btn-warning');
+                        b.classList.add('btn-outline-secondary');
+                    });
+                    btn.classList.remove('btn-outline-secondary');
+                    btn.classList.add('btn-warning');
+                    document.getElementById('heure_rdv').value = h;
+                    document.getElementById('error-creneau').textContent = '';
+                };
+                liste.appendChild(btn);
+            });
+        });
+}
+
+document.getElementById('service_id').addEventListener('change', function() {
+    const option = this.options[this.selectedIndex];
+    dureeSelectionnee = parseInt(option.dataset.duree) || 0;
+    dateSelectionnee = null;
+    document.getElementById('date_rdv').value = '';
+    document.getElementById('heure_rdv').value = '';
+    document.getElementById('bloc-creneaux').style.display = 'none';
+
+    if (dureeSelectionnee > 0) {
+        document.getElementById('bloc-calendrier').style.display = 'block';
+        renderCalendrier();
+    } else {
+        document.getElementById('bloc-calendrier').style.display = 'none';
+    }
+});
+
+document.getElementById('prev-mois').addEventListener('click', () => {
+    moisCourant.setMonth(moisCourant.getMonth() - 1);
+    renderCalendrier();
+});
+document.getElementById('next-mois').addEventListener('click', () => {
+    moisCourant.setMonth(moisCourant.getMonth() + 1);
+    renderCalendrier();
+});
+
 const form = document.getElementById('resaForm');
 if (form) {
-  form.addEventListener('submit', e => {
-    if (!form.checkValidity()) { e.preventDefault(); e.stopPropagation(); }
-    form.classList.add('was-validated');
-  });
+    form.addEventListener('submit', e => {
+        let ok = true;
+        if (!document.getElementById('date_rdv').value) {
+            document.getElementById('error-date').textContent = 'Veuillez sélectionner une date.';
+            ok = false;
+        }
+        if (!document.getElementById('heure_rdv').value) {
+            document.getElementById('error-creneau').textContent = 'Veuillez sélectionner un créneau.';
+            ok = false;
+        }
+        if (!form.checkValidity()) ok = false;
+        if (!ok) { e.preventDefault(); e.stopPropagation(); }
+        form.classList.add('was-validated');
+    });
 }
 </script>
 
