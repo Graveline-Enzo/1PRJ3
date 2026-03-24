@@ -9,7 +9,7 @@ $erreurs = [];
 $success = false;
 $recap   = null;
 
-// Étape 1 — validation et affichage du récap
+// Validation et affichage du récap
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['etape'] === 'recap') {
 
     $service_id = (int)post('service_id');
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['e
     }
 }
 
-// Étape 2 — confirmation et insertion en BDD
+// Confirmation et insertion en BDD
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['etape'] === 'confirmer') {
 
     $service_id = (int)post('service_id');
