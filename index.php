@@ -10,7 +10,7 @@ $dispos   = getDisponibilites();
 require_once 'inc/haut.inc.php';
 ?>
 
-<section id="accueil" class="salon-presentation d-flex align-items-center" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('./ressource/salon-background.jpg'); background-size: cover; background-position: center; height: 100vh; margin-top: -56px; padding-top: 56px;">
+<section id="accueil" class="salon-presentation d-flex align-items-center" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('./ressource/salon-background.jpg'); background-size: cover; background-position: center; min-height: 95vh; margin-top: -56px; padding-top: 56px;">
   <div class="salon-content px-5 text-white" style="max-width: 700px;">
     <h1 class="display-1 fw-black text-white mb-4">Hair it</h1>
     <p class="fs-5 lh-lg mb-4">Depuis plus de 15 ans, nous sublimions votre beauté naturelle avec passion et expertise. Notre équipe de coiffeurs professionnels vous accueille dans un cadre élégant et chaleureux pour une expérience unique.</p>
