@@ -28,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['e
     if (!validerEmail($email))                                   $erreurs[] = "L'adresse email est invalide.";
     if (!preg_match('/^[0-9]{10}$/', $telephone))                $erreurs[] = "Le téléphone doit contenir 10 chiffres.";
 
+
     $serviceChoisi = null;
     foreach ($services as $s) {
         if ((int)$s['id'] === $service_id) { $serviceChoisi = $s; break; }

@@ -4,30 +4,8 @@ require_once 'inc/fonction.inc.php';
 
 $pageTitle = SALON_NOM . ' — Salon de Coiffure Paris';
 
-$contactSuccess = false;
-$contactErreurs = [];
-
 $services = getServices();
 $dispos   = getDisponibilites();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form_contact'])) {
-
-    $nom     = post('nom');
-    $email   = post('email');
-    $message = post('message');
-
-    if (!validerNom($nom))         $contactErreurs[] = "Le nom est invalide (2–100 caractères).";
-    if (!validerEmail($email))     $contactErreurs[] = "L'adresse email est invalide.";
-    if (!validerMessage($message)) $contactErreurs[] = "Le message doit faire entre 10 et 1000 caractères.";
-
-    if (empty($contactErreurs)) {
-        if (sauvegarderContact($nom, $email, $message)) {
-            $contactSuccess = true;
-        } else {
-            $contactErreurs[] = "Une erreur technique est survenue. Veuillez réessayer.";
-        }
-    }
-}
 
 require_once 'inc/haut.inc.php';
 ?>
@@ -180,81 +158,6 @@ require_once 'inc/haut.inc.php';
           </div>
         </div>
       <?php endforeach; ?>
-    </div>
-  </div>
-</section>
-
-<section id="contact" class="py-5 section-dark">
-  <div class="container">
-    <div class="section-header text-center mb-5">
-      <span class="section-label">Écrivez-nous</span>
-      <h2 class="section-title text-white">Contact</h2>
-    </div>
-
-    <div class="row g-5 align-items-start">
-
-      <div class="col-md-5">
-        <div class="contact-info-box">
-          <h5 class="text-gold mb-4">Informations</h5>
-          <p><i class="bi bi-geo-alt-fill me-2 text-gold"></i><?= propre(SALON_ADRESSE) ?></p>
-          <p><i class="bi bi-telephone-fill me-2 text-gold"></i><?= propre(SALON_TEL) ?></p>
-          <p><i class="bi bi-envelope-fill me-2 text-gold"></i><?= propre(SALON_EMAIL) ?></p>
-          <div class="mt-4 d-flex gap-3">
-            <a href="https://instagram.com" target="_blank" class="social-icon"><i class="bi bi-instagram"></i></a>
-            <a href="https://facebook.com"  target="_blank" class="social-icon"><i class="bi bi-facebook"></i></a>
-            <a href="https://tiktok.com"    target="_blank" class="social-icon"><i class="bi bi-tiktok"></i></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-7">
-        <form id="contactForm" method="POST" action="index.php#contact" novalidate class="contact-form">
-
-          <input type="hidden" name="form_contact" value="1">
-
-          <?php if ($contactSuccess): ?>
-            <div class="alert alert-success d-flex align-items-center gap-2">
-              <i class="bi bi-check-circle-fill"></i>
-              Votre message a bien été envoyé. Merci !
-            </div>
-          <?php elseif (!empty($contactErreurs)): ?>
-            <div class="alert alert-danger">
-              <ul class="mb-0 ps-3">
-                <?php foreach ($contactErreurs as $err): ?>
-                  <li><?= propre($err) ?></li>
-                <?php endforeach; ?>
-              </ul>
-            </div>
-          <?php endif; ?>
-
-          <div class="mb-3">
-            <label for="nom" class="form-label text-white">Nom complet <span class="text-danger">*</span></label>
-            <input type="text" class="form-control form-control-dark" id="nom" name="nom"
-                   value="<?= propre(post('nom')) ?>" placeholder="Jean Dupont" required minlength="2" maxlength="100">
-            <div class="invalid-feedback">Veuillez entrer votre nom.</div>
-          </div>
-
-          <div class="mb-3">
-            <label for="email" class="form-label text-white">Email <span class="text-danger">*</span></label>
-            <input type="email" class="form-control form-control-dark" id="email" name="email"
-                   value="<?= propre(post('email')) ?>" placeholder="jean@exemple.fr" required maxlength="150">
-            <div class="invalid-feedback">Veuillez entrer un email valide.</div>
-          </div>
-
-          <div class="mb-3">
-            <label for="message" class="form-label text-white">Message <span class="text-danger">*</span></label>
-            <textarea class="form-control form-control-dark" id="message" name="message"
-                      rows="5" placeholder="Votre message..." required
-                      minlength="10" maxlength="1000"><?= propre(post('message')) ?></textarea>
-            <div class="invalid-feedback">Le message doit faire entre 10 et 1000 caractères.</div>
-          </div>
-
-          <button type="submit" class="btn btn-gold w-100">
-            <i class="bi bi-send me-2"></i>Envoyer le message
-          </button>
-
-        </form>
-      </div>
     </div>
   </div>
 </section>
