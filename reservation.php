@@ -20,14 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['etape']) && $_POST['e
     $email      = post('email');
     $telephone  = post('telephone');
 
-    if ($service_id <= 0)                                        $erreurs[] = "Veuillez sélectionner un service.";
-    if (!$date_rdv || !strtotime($date_rdv))                     $erreurs[] = "Veuillez sélectionner une date.";
+    if ($service_id <= 0)                                           $erreurs[] = "Veuillez sélectionner un service.";
+    if (!$date_rdv || !strtotime($date_rdv))                        $erreurs[] = "Veuillez sélectionner une date.";
     if (!$heure_rdv || !preg_match('/^\d{2}:\d{2}$/', $heure_rdv)) $erreurs[] = "Veuillez sélectionner un créneau.";
-    if (!validerNom($nom))                                       $erreurs[] = "Le nom est invalide (2–100 caractères).";
-    if (!validerNom($prenom))                                    $erreurs[] = "Le prénom est invalide (2–100 caractères).";
-    if (!validerEmail($email))                                   $erreurs[] = "L'adresse email est invalide.";
-    if (!preg_match('/^[0-9]{10}$/', $telephone))                $erreurs[] = "Le téléphone doit contenir 10 chiffres.";
-
+    if (!validerNom($nom))                                          $erreurs[] = "Le nom est invalide (2–100 caractères).";
+    if (!validerNom($prenom))                                       $erreurs[] = "Le prénom est invalide (2–100 caractères).";
+    if (!validerEmail($email))                                      $erreurs[] = "L'adresse email est invalide.";
+    if (!preg_match('/^[0-9]{10}$/', $telephone))                   $erreurs[] = "Le téléphone doit contenir 10 chiffres.";
 
     $serviceChoisi = null;
     foreach ($services as $s) {
@@ -116,7 +115,6 @@ require_once 'inc/haut.inc.php';
               <span class="text-muted">Heure</span>
               <strong><?= propre($recap['heure_rdv']) ?></strong>
             </li>
-            
             <li class="list-group-item d-flex justify-content-between px-0">
               <span class="text-muted">Nom</span>
               <strong><?= propre($recap['prenom']) ?> <?= propre($recap['nom']) ?></strong>
@@ -205,12 +203,14 @@ require_once 'inc/haut.inc.php';
                   <span class="fw-bold" id="label-mois"></span>
                   <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="next-mois">›</button>
                 </div>
-                <div class="row g-1 text-center mb-1">
+
+                <div class="d-grid mb-1" style="grid-template-columns: repeat(7, 1fr); gap: 4px;">
                   <?php foreach (['Lu','Ma','Me','Je','Ve','Sa','Di'] as $j): ?>
-                    <div class="col"><small class="text-muted fw-semibold"><?= $j ?></small></div>
+                    <div class="text-center"><small class="text-muted fw-semibold"><?= $j ?></small></div>
                   <?php endforeach; ?>
                 </div>
-                <div id="grille-jours" class="row g-1 text-center"></div>
+
+                <div id="grille-jours" class="d-grid" style="grid-template-columns: repeat(7, 1fr); gap: 4px;"></div>
               </div>
               <input type="hidden" name="date_rdv" id="date_rdv" value="<?= propre(post('date_rdv')) ?>">
               <div class="text-danger small mt-1" id="error-date"></div>
@@ -292,13 +292,18 @@ function renderCalendrier() {
     grille.innerHTML = '';
 
     const today = new Date(); today.setHours(0,0,0,0);
-    const dernier = new Date(annee, mois + 1, 0);
+    const dernier = new Date(annee, mois + 1, 0).getDate();
 
-    let jourDebut = new Date(annee, mois, 1).getDay();
-    jourDebut = jourDebut === 0 ? 6 : jourDebut - 1;
-    for (let i = 0; i < jourDebut; i++) grille.innerHTML += `<div class="col"></div>`;
+    let premierJour = new Date(annee, mois, 1).getDay();
+    premierJour = premierJour === 0 ? 6 : premierJour - 1;
 
-    for (let j = 1; j <= dernier.getDate(); j++) {
+    // Cases vides avant le 1er
+    for (let i = 0; i < premierJour; i++) {
+        grille.innerHTML += `<div></div>`;
+    }
+
+    // Jours du mois
+    for (let j = 1; j <= dernier; j++) {
         const date = new Date(annee, mois, j);
         const dateStr = annee + '-' + String(mois+1).padStart(2,'0') + '-' + String(j).padStart(2,'0');
         const passe = date < today;
@@ -306,12 +311,12 @@ function renderCalendrier() {
         const selectionne = dateStr === dateSelectionnee;
 
         let classe = 'btn btn-sm w-100 ';
-        if (selectionne)            classe += 'btn-warning fw-bold';
-        else if (passe || !ouvert)  classe += 'btn-light text-muted';
-        else                        classe += 'btn-outline-secondary';
+        if (selectionne)           classe += 'btn-warning fw-bold';
+        else if (passe || !ouvert) classe += 'btn-light text-muted';
+        else                       classe += 'btn-outline-secondary';
 
         grille.innerHTML += `
-          <div class="col">
+          <div>
             <button type="button" class="${classe}"
               ${passe || !ouvert ? 'disabled' : ''}
               onclick="selectionnerDate('${dateStr}')">${j}</button>
