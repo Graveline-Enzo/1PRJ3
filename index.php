@@ -1,0 +1,165 @@
+<?php
+require_once 'inc/init.inc.php';
+require_once 'inc/fonction.inc.php';
+
+$pageTitle = SALON_NOM . ' — Salon de Coiffure Paris';
+
+$services = getServices();
+$dispos   = getDisponibilites();
+
+require_once 'inc/haut.inc.php';
+?>
+
+<section id="accueil" class="salon-presentation d-flex align-items-center" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('./ressource/salon-background.jpg'); background-size: cover; background-position: center; min-height: 95vh; margin-top: -56px; padding-top: 56px;">
+  <div class="salon-content px-5 text-white" style="max-width: 700px;">
+    <h1 class="display-1 fw-black text-white mb-4">Hair it</h1>
+    <p class="fs-5 lh-lg mb-4">Depuis plus de 15 ans, nous sublimions votre beauté naturelle avec passion et expertise. Notre équipe de coiffeurs professionnels vous accueille dans un cadre élégant et chaleureux pour une expérience unique.</p>
+    <div class="d-flex gap-3 mb-5 flex-wrap">
+      <a href="reservation.php" class="btn rounded-pill px-4 py-3 fw-bold text-white" style="background-color: var(--orange);">Prendre rendez-vous</a>
+      <a href="#services" class="btn btn-outline-light rounded-pill px-4 py-3 fw-bold">Découvrir nos services</a>
+    </div>
+    <div class="d-flex gap-5 pt-3 border-top border-secondary">
+      <div>
+        <strong class="fs-4 d-block">15+</strong>
+        <p class="mb-0 small text-white-50">Années d'expérience</p>
+      </div>
+      <div>
+        <strong class="fs-4 d-block">5000+</strong>
+        <p class="mb-0 small text-white-50">Clients satisfaits</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services" class="py-5 section-light">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <span class="section-label">Ce que nous proposons</span>
+      <h2 class="section-title">Nos Services</h2>
+    </div>
+
+    <?php if (empty($services)): ?>
+      <p class="text-center text-muted">Aucun service disponible pour le moment.</p>
+    <?php else: ?>
+      <div class="row g-4">
+        <?php foreach ($services as $s): ?>
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+              <div class="card-body d-flex flex-column p-4">
+
+                <div class="bg-warning bg-opacity-10 rounded-3 p-2 mb-3 d-inline-flex align-self-start">
+                  <i class="bi bi-scissors fs-4 text-warning"></i>
+                </div>
+
+                <h5 class="card-title fw-bold"><?= propre($s['nom']) ?></h5>
+                <p class="card-text text-muted flex-grow-1"><?= propre($s['description']) ?></p>
+
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                  <span class="fw-bold text-warning fs-5">
+                    <?= number_format((float)$s['prix_euros'], 2, ',', ' ') ?> €
+                  </span>
+                  <span class="text-muted small">
+                    <i class="bi bi-clock me-1"></i><?= (int)$s['duree_minutes'] ?> min
+                  </span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+
+  </div>
+</section>
+
+<section id="horaires" class="py-5 section-dark">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label">Quand nous trouver</span>
+      <h2 class="section-title text-black">Horaires d'Ouverture</h2>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-5">
+
+        <div class="rounded-3 overflow-hidden shadow-sm">
+          <?php
+          $joursOrdre   = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+          $dispoParJour = [];
+          foreach ($dispos as $d) {
+              $dispoParJour[$d['jour_semaine']] = $d;
+          }
+          foreach ($joursOrdre as $jour):
+              $d      = $dispoParJour[$jour] ?? null;
+              $ouvert = $d && $d['actif'] === 'ouvert';
+          ?>
+            <div class="d-flex justify-content-between align-items-center px-4 py-3 bg-white border-bottom <?= !$ouvert ? 'opacity-50' : '' ?>">
+              <span class="fw-medium d-flex align-items-center gap-2 text-dark">
+                <span class="rounded-circle d-inline-block" style="width:8px;height:8px;background:<?= $ouvert ? '#28a745' : '#dc3545' ?>"></span>
+                <?= ucfirst($jour) ?>
+              </span>
+              <?php if ($ouvert): ?>
+                <span class="text-muted small"><?= date('G\hi', strtotime($d['heure_debut'])) ?> – <?= date('G\hi', strtotime($d['heure_fin'])) ?></span>
+              <?php else: ?>
+                <span class="text-muted small fst-italic">Fermé</span>
+              <?php endif; ?>
+            </div>
+          <?php endforeach; ?>
+        </div>
+
+        <div class="text-center mt-4">
+          <a href="reservation.php" class="btn btn-warning fw-semibold px-4 py-2 rounded-pill">
+            <i class="bi bi-calendar-check me-2"></i>Prendre rendez-vous
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="temoignages" class="py-5 section-light">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <span class="section-label">Ce qu'ils disent</span>
+      <h2 class="section-title">Avis de nos clients</h2>
+    </div>
+
+    <div class="row g-4">
+      <?php
+      $temoignages = [
+        ['S', 'Sophie M.',  5, "Je suis cliente depuis 3 ans, la qualité est toujours au rendez-vous. Merci à toute l'équipe !"],
+        ['L', 'Laura B.',   5, "Excellent accueil, coiffure parfaite pour mon mariage. Je recommande vivement ce salon !"],
+        ['T', 'Thomas K.',  4, "Super salon, ambiance chaleureuse et résultat impeccable. Je reviendrai sans hésitation."],
+      ];
+      foreach ($temoignages as [$initiale, $nom, $note, $texte]): ?>
+        <div class="col-md-4">
+          <div class="card h-100 border-2 border-warning rounded-3 shadow-sm">
+            <div class="card-body p-4 d-flex flex-column">
+
+              <div class="text-warning mb-2" style="font-size:1.1rem;">
+                <?= str_repeat('★', $note) ?><span class="text-secondary"><?= str_repeat('★', 5 - $note) ?></span>
+              </div>
+
+              <p class="card-text text-muted flex-grow-1 fst-italic">"<?= propre($texte) ?>"</p>
+
+              <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-dark fw-medium bg-warning"
+                     style="width:42px;height:42px;font-size:1rem;flex-shrink:0;">
+                  <?= $initiale ?>
+                </div>
+                <div>
+                  <strong class="d-block"><?= propre($nom) ?></strong>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
+<?php require_once 'inc/bas.inc.php'; ?>

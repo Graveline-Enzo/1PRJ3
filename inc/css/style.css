@@ -1,0 +1,31 @@
+:root {
+  --orange: #ffa500;
+}
+
+.logo-title {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-title svg {
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: var(--orange);
+}
+
+header .btn-outline-success {
+  --bs-btn-color: #ffa500;
+  --bs-btn-border-color: #ffa500;
+  --bs-btn-hover-bg: #ffa500;
+  --bs-btn-hover-border-color: #ffa500;
+  --bs-btn-active-bg: #ffa500;
+  --bs-btn-active-border-color: #ffa500;
+}
+
+.salon-content h1 {
+    font-size: 5rem;
+    font-weight: 900;
+}
